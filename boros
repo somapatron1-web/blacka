@@ -1,0 +1,1369 @@
+if getgenv().loaded then 
+    return
+end 
+
+getgenv().loaded = true 
+
+local StarterGui = game:GetService("StarterGui")
+
+StarterGui:SetCore("SendNotification", {
+    Title = "script loading..",
+    Text = "wait 8 seconds to load",
+    Duration = 8, -- seconds the notification stays on screen
+    Button1 = "Got it"
+})
+
+
+task.wait(8)
+StarterGui:SetCore("SendNotification", {
+    Title = "❗",
+    Text = "Enjoy",
+    Duration = 8, -- seconds the notification stays on screen
+    Button1 = "Got it"
+})
+
+if LPH_OBFUSCATED == nil then
+    local assert = assert
+    local type = type
+    local setfenv = setfenv
+    LPH_ENCNUM = function(toEncrypt, ...)
+        assert(type(toEncrypt) == "number" and #{...} == 0, "LPH_ENCNUM only accepts a single constant double or integer as an argument.")
+        return toEncrypt
+    end
+    LPH_NUMENC = LPH_ENCNUM
+    LPH_ENCSTR = function(toEncrypt, ...)
+        assert(type(toEncrypt) == "string" and #{...} == 0, "LPH_ENCSTR only accepts a single constant string as an argument.")
+        return toEncrypt
+    end
+    LPH_STRENC = LPH_ENCSTR
+    LPH_ENCFUNC = function(toEncrypt, encKey, decKey, ...)
+        assert(type(toEncrypt) == "function" and type(encKey) == "string" and #{...} == 0, "LPH_ENCFUNC accepts a constant function, constant string, and string variable as arguments.")
+        return toEncrypt
+    end
+    LPH_FUNCENC = LPH_ENCFUNC
+    LPH_JIT = function(f, ...)
+        assert(type(f) == "function" and #{...} == 0, "LPH_JIT only accepts a single constant function as an argument.")
+        return f
+    end
+    LPH_JIT_MAX = LPH_JIT
+    LPH_NO_VIRTUALIZE = function(f, ...)
+        assert(type(f) == "function" and #{...} == 0, "LPH_NO_VIRTUALIZE only accepts a single constant function as an argument.")
+        return f
+    end
+    LPH_NO_UPVALUES = function(f, ...)
+        assert(type(setfenv) == "function", "LPH_NO_UPVALUES can only be used on Lua versions with getfenv & setfenv")
+        assert(type(f) == "function" and #{...} == 0, "LPH_NO_UPVALUES only accepts a single constant function as an argument.")
+        local env = getrenv()
+        return setfenv(
+            LPH_NO_VIRTUALIZE(function(...)
+                return func(...)
+            end),
+            setmetatable(
+                {
+                    func = f
+                },
+                {
+                    __index = env,
+                    __newindex = env
+                }
+            )
+        )
+    end
+    LPH_CRASH = function(...)
+        assert(#{...} == 0, "LPH_CRASH does not accept any arguments.")
+        game:Shutdown()
+        while true do end
+    end
+    LRM_IsUserPremium = false
+    LRM_LinkedDiscordID = "0"
+    LRM_ScriptName = "boros"
+    LRM_TotalExecutions = 0
+    LRM_SecondsLeft = math.huge
+    LRM_UserNote = "Developer";
+end;
+
+local Game_Name = (game.PlaceId == 4991214437 and "Town") or (game.PlaceId == 18642421777 and "The Bronx") or (game.PlaceId == 16472538603 and "The Bronx") or (game.PlaceId == 13643807539 and "South Bronx") or (game.PlaceId == 93612682780562 and "South Bronx") or (game.PlaceId == 14413475235 and "South Bronx") or (game.PlaceId == 104715542330896 and "BlockSpin") or (game.PlaceId == 71600459831333 and "Street Life") or "Universal" or game.PlaceId == 13643807539
+
+if not getexecutorname then
+    getexecutorname = identifyexecutor
+end
+
+local Solara = string.match(getexecutorname(), "Solara") == "Solara" or string.match(getexecutorname(), "Xeno") == "Xeno" or getexecutorname() == string.match(getexecutorname(), "Zorara") == "Zorara";
+local cloneref = cloneref or function(...) return ... end
+
+local Services = setmetatable({}, {
+    __index = LPH_NO_VIRTUALIZE(function(self, service, key)
+        if Solara and (service == "VirtualInputManager") and (Game_Name == "The Bronx") then
+            return {SendKeyEvent = function() end}
+        end
+        return cloneref(game:GetService(service))
+    end)
+})
+
+if Game_Name == "South Bronx" and not Solara then
+
+         local _getallthreads = LPH_JIT_MAX(function()
+            local threads = {}
+            for i, v in getreg() do
+                if type(v) == 'thread' then
+                    table.insert(threads, v)
+                end
+            end
+            return threads
+        end)
+
+        local _gettenv = LPH_JIT_MAX(function(Thread)
+            return getfenv(debug.info(Thread, 1, 'f'))
+        end)
+
+        if gettenv then
+            _gettenv = gettenv
+        end
+
+        local Filter_Nil_Instances = LPH_JIT_MAX(function(Name) 
+            local Found = nil 
+
+            for _, Object in getnilinstances() do  
+                if tostring(Object):find(Name) then 
+                    Found = Object
+                end
+            end
+
+            return Found
+        end)
+
+        local Filter_Table = LPH_JIT_MAX(function(Table, Name)
+            local Found, Index = nil, nil
+
+            for _, Object in Table do 
+
+                if tostring(_):lower():find(tostring(Name):lower()) then 
+                    Found = Object
+                    Index = _
+                end
+            end
+
+            return Found, Index
+        end)
+
+        local Search_Threads = LPH_JIT_MAX(function(Table, Variable)
+            local Threads = {}
+
+            for NO, _thread in pairs(Table) do
+                local T_ENV = _gettenv(_thread)
+
+                if T_ENV[Variable] then
+                    table.insert(Threads, _thread)
+                end
+            end
+
+            return Threads
+        end)
+
+        local Get_AntiCheat_Threads = LPH_JIT_MAX(function()
+            local Threads = _getallthreads()
+            local WeHaveAHacker = Search_Threads(Threads, 'WeHaveAHacker')
+            if WeHaveAHacker[1] then
+                return WeHaveAHacker
+            end
+        end)
+
+        local AntiCheat_Threads = {}
+        local AntiCheat_Encoded = {
+            [1] = "iFPjbrlufvSzsYurCCdWeFbPeNBWzxywGWLNpzgQVVvkLaoDJjImgWFETWVzc2FnZVR5cGU=",
+            [2] = "AjimhYxuTcBxLtetPTqLQKsdsjDiWNpsPSoXToFfvftufSnLTemZUVKTWVzc2FnZVUlZm8=",
+            [3] = "VFevcWxuZHlvFWejJERNXupJDNxvjnIBPHBNZgSMHNOeQURICksIFETWVzc2FnZVR5cGU=",
+            [4] = "RJLHPqjgyYwiGKfgSdISiCpvzGmdJKBkWUMMZHxtipCmivjZdXzDWsTWVzc2FnZUlDHbIdA=="
+        }
+
+        local Anti_Cheat_Script = Filter_Nil_Instances('?')
+
+        if not Anti_Cheat_Script then
+            repeat task.wait()
+            Anti_Cheat_Script = Filter_Nil_Instances('?')
+            until Anti_Cheat_Script~=nil
+        end
+
+        local AntiCheat_Function, Function_Index = Filter_Table(getsenv(Anti_Cheat_Script), "HPv")
+        if not AntiCheat_Function then
+            repeat task.wait()
+            Anti_Cheat_Script = Filter_Nil_Instances('?')
+            AntiCheat_Function, Function_Index = Filter_Table(getsenv(Anti_Cheat_Script), "HPv")
+
+            until AntiCheat_Function~=nil
+        end
+
+        local Killable_Threads = {[1] = true, [3] = true, [4] = true}
+
+        local XVNP_L = LPH_JIT_MAX(function(...)
+            local Random_Message = AntiCheat_Encoded[math.random(1, #AntiCheat_Encoded)]
+            return AntiCheat_Function(Random_Message)
+        end)
+
+        Services.RunService.RenderStepped:Connect(LPH_JIT_MAX(function()
+            AntiCheat_Threads = Get_AntiCheat_Threads()
+
+            if AntiCheat_Threads then
+                for i = 1, #AntiCheat_Threads do
+                    local Thread = AntiCheat_Threads[i]
+
+                    if Thread and Killable_Threads[i] == true then
+                        task.cancel(Thread)
+                    end
+                end
+            end
+
+            XVNP_L()
+        end))
+    task.wait(5)
+end
+
+local script_key;
+if LPH_OBFUSCATED then
+    script_key = getfenv().script_key
+end
+
+if script_key then
+    writefile("BronxLol_Key.txt", script_key)
+end
+
+do 
+    Players = Services.Players;
+    ReplicatedStorage = Services.ReplicatedStorage;
+    UserInputService = Services.UserInputService;
+    Workspace = Services.Workspace;
+    RunService = Services.RunService;
+    ProximityPromptService = Services.ProximityPromptService;
+    MarketplaceService = Services.MarketplaceService;
+    StarterGui = Services.StarterGui
+    VirtualInputManager = Services.VirtualInputManager;
+    Lighting = Services.Lighting
+    mathrandom = math.random;
+    mathabs = math.abs;
+    Mobile = UserInputService.TouchEnabled
+
+    Cars = {}
+
+    Camera = Workspace.CurrentCamera
+
+    LocalPlayer = Players.LocalPlayer
+    Mouse = LocalPlayer:GetMouse()
+
+    Move_Mouse_Function = mousemoverel
+end;
+local FireServer, InvokeServer, UnreliableFireServer = Instance.new("RemoteEvent").FireServer, Instance.new("RemoteFunction").InvokeServer, Instance.new("UnreliableRemoteEvent").FireServer
+
+if isfunctionhooked then
+    if isfunctionhooked(FireServer) or isfunctionhooked(UnreliableFireServer) or isfunctionhooked(InvokeServer) and LPH_OBFUSCATED then
+        return Services.LocalPlayer:Kick("boros | Security : You are running another script, please disable it and execute again")
+    end
+end
+
+local SafePosition = CFrame.new(-437, 33, 6653)
+
+local Config = {
+    ["TheBronx"] = {
+        ["Selected_Item"] = "...";
+        ["TeleportationList"] = {
+            ["Deli Market 🥪"] = CFrame.new(-602.3944091796875, 253.73313903808594, -584.2000732421875);
+            ["Capital One Bank 🏦"] = CFrame.new(-205, 284, -1214);
+            ["Ice Box 🧊"] = CFrame.new(-198.8927001953125, 283.8486633300781, -1170.4500732421875);
+            ["Domino's 🍕"] = CFrame.new(-742.5213012695312, 253.22897338867188, -946.2092895507812);
+            ["Hotel 🏨"] = CFrame.new(-1012, 266, -933);
+            ["Drip Store 👓"] = CFrame.new(67462.6953125, 10489.0322265625, 546.6762084960938);
+            ["Gun Shop 🔫"] = CFrame.new(92970.4140625, 122097.953125, 17023.623046875);
+            ["Car Dealer 🚗"] = CFrame.new(-378.6668701171875, 253.2564697265625, -1245.4259033203125);
+            ["Laundromat 💷"] = CFrame.new(-979.4635620117188, 253.65318298339844, -689.3339233398438);
+            ["Studio 🎙"] = CFrame.new(93408.453125, 14484.7158203125, 570.139404296875);
+            ["Basketball Court 🏀"] = CFrame.new(-1055.6407470703125, 253.51364135742188, -497.10528564453125);
+            ["Robbable Ice Box 🧊"] = CFrame.new(-209.68360900878906, 283.4959411621094, -1265.5286865234375);
+            ["Exotic Dealer / Grass House 🍃"] = CFrame.new(-1521.943115234375, 272.5462646484375, -984.3020629882812);
+            ["Safe 🔒"] = CFrame.new(-190, 295, -1010);
+            ["Roof Top / Bank Tools 🛠"] = CFrame.new(-385, 340, -557);
+            ["Second Gun Shop 🔫"] = CFrame.new(66202, 123615.7109375, 5749.81689453125);
+            ["Construction Job 🔨"] = CFrame.new(-1729, 371, -1171);
+        };
+
+        ["Modifications"] = newproxy(true);
+        ["_Modifications"] = {
+            ["DisableJamming"] = false;
+            ["ModifySpreadValue"] = false;
+            ["ModifyRecoilValue"] = false;
+            ["Automatic"] = false;
+            ["ModifyFireRate"] = false;
+            ["ModifyReloadSpeed"] = false;
+            ["ModifyEquipSpeed"] = false;
+            ["InfiniteAmmo"] = false;
+            ["InfiniteClips"] = false;
+            ["InfiniteDamage"] = false;
+
+            ["FireRateSpeed"] = 50;
+            ["SpreadPercentage"] = 50;
+            ["RecoilPercentage"] = 50;
+            ["ReloadSpeed"] = 50;
+            ["EquipSpeed"] = 50;
+        };
+
+        ["PlayerModifications"] = {
+            ["InfiniteSleep"] = false;
+            ["InfiniteStamina"] = false;
+            ["InfiniteHunger"] = false;
+            ["InstantInteract"] = false;
+            ["InstantRevive"] = false;
+            ["AutoPickupCash"] = false;
+            ["AutoPickupBags"] = false;
+            ["DisableCameraBobbing"] = false;
+            ["DisableCameras"] = false;
+            ["BypassLockedCars"] = false;
+            ["DisableBloodEffects"] = false;
+            ["NoJumpCooldown"] = false;
+            ["NoRentPay"] = false;
+            ["NoFallDamage"] = false;
+            ["NoKnockback"] = false;
+            ["InfiniteHealth"] = false;
+            ["RespawnWhereYouDied"] = false;
+        };
+
+        ["InfiniteHealth"] = false;
+
+        ["StoreDupedItem"] = false;
+        ["Selected_Location"] = "...";
+        ["ClickTeleportActive"] = false;
+
+        ["PlayerUtilities"] = {
+            ["SelectedPlayer"] = "...";
+            ["BringingPlayer"] = false;
+            ["SpectatePlayer"] = false;
+            ["AutoKill"] = false;
+            ["AutoRagdoll"] = false;
+            ["BugPlayer"] = false;
+        };
+        ["VehicleModifications"] = {
+            ["SpeedEnabled"] = false;
+            ["SpeedValue"] = 10/1000;
+            ["BreakEnabled"] = false;
+            ["BreakValue"] = 50/1000;
+            ["InstantStop"] = false;
+            ["InstantStopBind"] = Enum.KeyCode.V;
+        };
+        ["Farms"] = {
+            ["CollectDroppedMoney"] = false;
+
+            ["CollectDroppedLoot"] = false;
+            ["OnlyCollectGuns"] = false;
+
+            ["AFKCheck"] = false;
+            ["FarmConstructionJob"] = false;
+            ["FarmBank"] = false;
+            ["FarmHouses"] = false;
+            ["FarmStudio"] = false;
+            ["FarmTrash"] = false;
+            ["AutoSellTrash"] = false;
+        };
+
+        ["KillAura"] = false;
+        ["KillAuraRange"] = 300;
+        ["KillAuraWhitelist"] = {};
+
+        ["AutoDrop"] = false;
+        ["MoneyAmount"] = false;
+
+        ["Fly"] = {
+            ["Enabled"] = false;
+            ["Type"] = "CFrame";
+            ["Speed"] = 50;
+        };
+    };
+
+    ["BlockSpin"] = {
+        ["LocalPlayer"] = {
+            ["InfiniteStamina"] = false;
+        };
+
+        ["AutoFarming"] = {
+            ["FarmMops"] = false;
+            ["MopType"] = "Default";
+        };
+    };
+
+    ["Road_To_Riches"] = {
+        ["_Modifications"] = {
+            ["ExplosiveBullets"] = false;
+            ["InfiniteAmmo"] = false;
+            ["InfiniteDamage"] = false;
+            ["InstantReload"] = false;
+            ["InstantEquip"] = false;
+            ["Automatic"] = false;
+            ["RapidFire"] = false;
+            ["NoSpread"] = false;
+            ["NoRecoil"] = false;
+        };
+
+        ["Locations"] = {
+            ["ATM 🏧"] = CFrame.new(360, 2563, 1946);
+            ["Gun Dealer 🔫"] = CFrame.new(231, 2545, 1065);
+            ["Gold Shop 🪙"] = CFrame.new(-78.1158218383789, 2563.1123046875, 944.74365234375);
+            ["Barber 💈"] = CFrame.new(1217.6531982421875, 2557.93896484375, 981.182861328125);
+            ["Monderella 🍕"] = CFrame.new(428.89581298828125, 2563.31005859375, 1275.4918212890625);
+            ["Deli 🥪"] = CFrame.new(-70.2744369506836, 2562.807861328125, 719.9676513671875);
+            ["Library 📖"] = CFrame.new(53.477169036865234, 2562.908203125, 1960.6444091796875);
+            ["Laboratory 🔬"] = CFrame.new(564, 2563, 1957);
+            ["Hot Dog Stand 🌭"] = CFrame.new(295.57403564453125, 2562.7646484375, 1996.2435302734375);
+            ["Gym 💪" ] = CFrame.new(-37.920719146728516, 2563.05029296875, 442.32647705078125);
+            ["Banks Burgers 🍔"] = CFrame.new(794.2547607421875, 2562.93701171875, 311.8097229003906);
+            ["Laundromat 💷"] = CFrame.new(402.6617126464844, 2562.892822265625, 1503.2645263671875);
+            ["Cocaine Factory 🏭"] = CFrame.new(1227, 2529, 1987);
+            ["Cooking Pots 🧪"] = CFrame.new(131, 2540, 1004);
+            ["Scrap Metal ⚒️"] = CFrame.new(1049, 2563, 1052);
+        };
+
+        ["PackFarm"] = {
+            ["Enabled"] = false;
+            ["AllowedPacks"] = {};
+            ["AllowedJunkies"] = {};
+        };
+
+        ["InfiniteClips"] = false;
+        ["InfiniteStamina"] = false;
+        ["InfiniteEnergy"] = false;
+
+        ["Modifications"] = newproxy(true);
+        ["InstantInteract"] = false;
+
+        ["ESP"] = {
+            ["Pots"] = false;
+            ["AllowedPots"] = {}
+        };
+    };
+["South_Bronx"] = {
+        ["LocalPlayer_Config"] = {
+            ["InstantInteract"] = false;
+            ["DeleteOnKey"] = false;
+            ["DeleteKey"] = nil;
+            ["NoClip"] = false;
+            ["HideName"] = false;
+            ["InfiniteStamina"] = false;
+            ["Speed"] = false;
+            ["SpeedValue"] = 0.75;
+        };
+
+        ["TeleportMethod"] = "Damage";
+
+        ["FarmingUtilities"] = {
+            ["CardFarm"] = false;
+            ["BoxFarm"] = false;
+            ["ChipFarm"] = false;
+            ["MarshmallowFarm"] = false;
+            ["MarshmallowIncrement"] = 5;
+        };
+
+        ["OwnedBike"] = "Unknown";
+
+        ["Guns"] = {};
+        ["Selected_Item"] = "...";
+        ["Item_Amount"] = 1;
+
+        ["Locations"] = {
+            ["Main Gun Store 🔫"] = CFrame.new(219, 6, -158);
+            ["Black Market 💹"] = CFrame.new(671, 6, 251);
+            ["DealerShip 🚗"] = CFrame.new(738, 6, 439);
+            ["DealerShip Apartments 🌇"] = CFrame.new(717, 5, 548);
+            ["Clothes Store 👕"] = CFrame.new(-197, 6, -74);
+            ["Box Job Apartments 📦"] = CFrame.new(-527, 6, 142);
+            ["Bank 💳"] = CFrame.new(-47, 6, -340);
+            ["Fake ID Seller 🎫"] = CFrame.new(219, 6, -331);
+            ["DOA Turf 🔴"] = CFrame.new(-335, 6, -415);
+            ["OGZ Turf 🟣"] = CFrame.new(125, 6, -466);
+            ["YGZ Turf 🟢"] = CFrame.new(3, 6, 223);
+            ["Studio 🎙"] = CFrame.new(522, 6, -26);
+            ["Shoe Store 👟"] = CFrame.new(525, 7, -184);
+            ["Second Gun Store 🔫"] = CFrame.new(-459, 6, 328);
+            ["Exclusive Gun Store 🔫"] = CFrame.new(1131, 4, 173);
+        };
+        
+        ["Selected_Location"] = "...";
+        ["Modifications"] = newproxy(true);
+
+        ["_Modifications"] = {
+            ["DisableJamming"] = false;
+            ["ModifySpreadValue"] = false;
+            ["ModifyRecoilValue"] = false;
+            ["Automatic"] = false;
+            ["ModifyFireRate"] = false;
+            ["InstantKill"] = false;
+            ["ModifyReloadSpeed"] = false;
+            ["ModifyEquipSpeed"] = false;
+            ["InfiniteAmmo"] = false;
+            ["InfiniteClips"] = false;
+
+            ["FireRateSpeed"] = 50;
+            ["SpreadPercentage"] = 50;
+            ["RecoilPercentage"] = 50;
+            ["ReloadSpeed"] = 50;
+            ["EquipSpeed"] = 50;
+        };
+
+        ["PlayerUtilities"] = {
+            ["SelectedPlayer"] = "...";
+            ["BringingPlayer"] = false;
+            ["SpectatePlayer"] = false;
+        };
+
+        ["VehicleModifications"] = {
+            ["SpeedEnabled"] = false;
+            ["SpeedValue"] = 10/1000;
+            ["BreakEnabled"] = false;
+            ["BreakValue"] = 50/1000;
+            ["InstantStop"] = false;
+            ["InstantStopBind"] = Enum.KeyCode.V;
+        };
+
+        ["KillAura"] = false;
+        ["KillAuraRange"] = 100;
+        ["KillAuraWhitelist"] = {};
+    };
+
+    ["Game"] = {
+        ["Ray_Systems"] = (Game_Name == "Road To Riches" and {"Raycast"} or Game_Name == "BlockSpin" and {"Raycast"} or Game_Name == "Town" and {"Raycast"} or Game_Name == "Universal" and {"Raycast","FindPartOnRay","FindPartOnRayWithWhitelist"} or Game_Name == "The Bronx" and {"FindPartOnRay"}  or Game_Name == "South Bronx" and {"Raycast"} or Game_Name == "Street Life" and {"Raycast"} or Game_Name == "Criminality" and {"Raycast"}) or {};
+        ["Wall_Bang_Possible"] = ((Game_Name == "Universal" or Game_Name == "Criminality" or Game_Name == "South Bronx" or Game_Name == "The Bronx" or Game_Name == "Street Life"));
+};
+
+    ["Aimlock"] = {
+        ["Enabled"] = false;
+        ["Aiming"] = false;
+        ["TargetPart"] = "Head";
+        ["MaxDistance"] = 300;
+        ["Mode"] = "Toggle"; 
+        ["Type"] = "Mouse"; 
+        ["Keybind"] = nil;
+        ["WallCheck"] = false;
+        ["Priority"] = {};
+        ["Whitelisted"] = {};
+        ["DrawFieldOfView"] = false;
+        ["UseFieldOfView"] = false;
+        ["Radius"] = 100;
+        ["FieldOfViewColor"] = Color3.new(1,1,1);
+        ["FieldOfViewTransparency"] = 0.25;
+        ["Sides"] = 100;
+        ["Smoothness"] = 1;
+        ["Snapline"] = false;
+        ["SnaplineColor"] = Color3.new(1,1,1);
+        ["SnaplineThickness"] = 1;
+    };
+["Silent"] = {
+        ["Enabled"] = false;
+        ["Targetting"] = false;
+        ["TargetPart"] = {"Head"};
+        ["Mode"] = "nil";
+        ["MaxDistance"] = 300;
+        ["Keybind"] = nil;
+        ["WallCheck"] = false;
+        ["WallBang"] = false;
+        ["Priority"] = {};
+        ["Whitelisted"] = {};
+        ["DrawFieldOfView"] = false;
+        ["UseFieldOfView"] = false;
+        ["Radius"] = 100;
+        ["FieldOfViewColor"] = Color3.new(1,1,1);
+        ["FieldOfViewTransparency"] = 0.25;
+        ["Sides"] = 100;
+        ["HitChance"] = 100;
+        ["Snapline"] = false;
+        ["SnaplineColor"] = Color3.new(1,1,1);
+        ["Damage"] = 100;
+        ["SnaplineThickness"] = 1;
+    };
+["WorldVisuals"] = {
+        ["SaturationEnabled"] = false;
+        ["Saturation_Value"] = 1;
+
+        ["FogColorEnabled"] = false;
+        ["FogColor"] = Color3.new(1,1,1);
+
+        ["AmbientEnabled"] = false;
+        ["AmbientColor"] = Color3.new(1,1,1);
+
+        ["FieldOfViewEnabled"] = false;
+        ["FieldOfViewValue"] = 70;
+
+        ["Fullbright"] = false;
+    };
+["MiscSettings"] = {
+        ["Hitbox_Expander"] = {
+            ["Enabled"] = false;
+            ["Multiplier"] = 15;
+            ["Color"] = Color3.new(1,1,1);
+            ["Transparency"] = 0;
+            ["Type"] = "Block";
+            ["Material"] = "ForceField";
+            ["Whitelist"] = {};
+            ["Part"] = "HumanoidRootPart";
+        };
+
+        ["ModifySpeed"] = {
+            ["Enabled"] = false;
+            ["Value"] = 16;
+        };
+
+        ["ModifyJump"] = {
+            ["Enabled"] = false;
+            ["Infinity"] = false;
+            ["Value"] = 50;
+        };
+
+        ["Fly"] = {
+            ["Enabled"] = false;
+            ["Type"] = "CFrame";
+            ["Speed"] = 50;
+        };
+
+        ["SpinBot"] = {
+            ["Enabled"] = false;
+            ["Speed"] = 35;
+        };
+
+        ["No-Clip"] = false;
+    };
+
+    ["Guns"] = {};
+ESP = {
+        Enabled = false,
+        TeamCheck = false,
+        MaxDistance = 500,
+        FontSize = 12,
+        Font = Enum.Font.Code,
+        FadeOut = {
+            OnDistance = false,
+            OnDeath = true,
+            OnLeave = false,
+        },
+        Options = { 
+            Teamcheck = true, TeamcheckRGB = Color3.fromRGB(0, 255, 0),
+            Friendcheck = true, FriendcheckRGB = Color3.fromRGB(0, 255, 0),
+            Highlight = false, HighlightRGB = Color3.fromRGB(255, 0, 0),
+        },
+        Drawing = {
+            Chams = {
+                Enabled  = false,
+                Thermal = true,
+                FillRGB = Color3.fromRGB(119, 120, 255),
+                Fill_Transparency = 80,
+                OutlineRGB = Color3.fromRGB(0,0,0),
+                Outline_Transparency = 80,
+                VisibleCheck = false,
+                VisibleCheckESP = false,
+                OccludedRGB = Color3.fromRGB(255, 0, 0),
+            },
+            Names = {
+                Enabled = false,
+                Transparency = 0,
+                RGB = Color3.fromRGB(255, 255, 255),
+            },
+            Flags = {
+                Enabled = false,
+            },
+            Distances = {
+                Enabled = false, 
+                Position = "Bottom",
+                Transparency = 0,
+                RGB = Color3.fromRGB(255, 255, 255),
+            },
+            Weapons = {
+                Enabled = false, WeaponTextRGB = Color3.fromRGB(119, 120, 255),
+                Outlined = false,
+                Gradient = false,
+                Transparency = 0,
+                GradientRGB1 = Color3.fromRGB(255, 255, 255), GradientRGB2 = Color3.fromRGB(119, 120, 255),
+            },
+            Inventory = {
+                Enabled = false, RGB = Color3.fromRGB(255, 255, 255),
+                Transparency = 0,
+            },
+            Healthbar = {
+                Enabled = false,  
+                HealthText = false, Lerp = true, HealthTextRGB = Color3.fromRGB(0, 255, 0),
+                Width = 2.5,
+                Transparency = 0,
+                HealthTextTransparency = 0,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(255, 0, 0), GradientRGB2 = Color3.fromRGB(0,255,0)
+            },
+            Boxes = {
+                Animate = true,
+                RotationSpeed = 300,
+                Gradient = false, GradientRGB1 = Color3.fromRGB(119, 120, 255), GradientRGB2 = Color3.fromRGB(0, 0, 0), 
+                GradientFill = true, GradientFillRGB1 = Color3.fromRGB(119, 120, 255), GradientFillRGB2 = Color3.fromRGB(0, 0, 0), 
+                Filled = {
+                    Enabled = false,
+                    Transparency = 0.75,
+                    RGB = Color3.fromRGB(0, 0, 0),
+                },
+                Full = {
+                    Enabled = true,
+                    Transparency = 0,
+                    RGB = Color3.fromRGB(255, 255, 255),
+                },
+                Bounding = {
+                    Enabled = false,
+                    Transparency = 0,
+                    RGB = Color3.fromRGB(255, 255, 255),
+                },
+                Corner = {
+                    Enabled = false,
+                    Transparency = 0,
+                    RGB = Color3.fromRGB(255, 255, 255),
+                },
+            };
+};
+        Connections = {
+            RunService = Services.RunService;
+        };
+        Fonts = {};
+    };
+};
+
+
+getgenv().library = {
+    directory = "boros_remastered",
+    folders = {
+        "/fonts",
+        "/configs",
+        "/assets"
+    },
+    priority = {},
+    whitelist = {},
+    flags = {},
+    config_flags = {},
+    connections = {},   
+    notifications = {notifs = {}},
+    current_open;
+}
+
+local Images = {"ESP.png", "World.png", "Wrench.png", "Settings.png", "Node.png", "cursor.png", "Bullet.png", "Snapline.png", "Pistol.png", "folder.png", "UZI.png", "FieldOfView2.png", "Lock.png", "Aimlock.png", "Cash.png", "Wheatt.png", "Pickkaxe.png", "unlocked.png"}
+
+for _, path in next, library.folders do 
+    makefolder(library.directory .. path)
+end
+
+for Index, Value in Images do
+    local Location = library.directory.."/assets/"..Value
+    if not isfile(Location) then
+        local ImageDiddyAhhBlud = game:HttpGet("https://raw.githubusercontent.com/KingVonOBlockJoyce/imagessynex/main/"..Value)
+        repeat wait() until ImageDiddyAhhBlud ~= nil
+        writefile(Location, ImageDiddyAhhBlud)
+    end
+end
+
+GetImage = LPH_NO_VIRTUALIZE(function(Name)
+    local Location = library.directory.."/assets/"..Name
+    if isfile(Location) then
+        return getcustomasset(Location)
+    end
+end)
+
+local Collide_Data = {}
+
+local DefaultPlayerSettings = {}
+
+if not Services.Players.LocalPlayer.Character then
+    Services.Players.LocalPlayer.CharacterAdded:Wait()
+    task.wait(1)
+end
+
+for Index, Value in Services.Players.LocalPlayer.Character:GetDescendants() do
+    pcall(LPH_NO_VIRTUALIZE(function()
+        if Value:IsA("BasePart") then
+            Collide_Data[Value.Name] = Value.CanCollide
+        end
+    end))
+end
+
+if Game_Name == "The Bronx" and not Solara then
+    local old;
+    old = hookfunction(getrenv()._G.CheckBody, LPH_NO_UPVALUES(function(...)
+        return true
+    end))
+
+    local get_nil_instance = LPH_JIT_MAX(function(name, class)
+        for i,v in getnilinstances() do
+            if v.Name == name and v.ClassName == class then
+                return v
+            end
+        end
+    end)
+    
+    repeat task.wait() until get_nil_instance("Gun", "ModuleScript")
+    local gun_module = getsenv(get_nil_instance("Gun", "ModuleScript"))
+    local old;
+    old = hookfunction(gun_module.x, LPH_NO_UPVALUES(function()
+        return nil
+    end))
+
+    getgenv().AntiCheatBypass = true
+end
+
+repeat Services.RunService.RenderStepped:Wait() until getgenv().AntiCheatBypass == true or true
+
+local OldLightingSettings = {}
+OldLightingSettings["Brightness"] = Lighting.Brightness
+OldLightingSettings["ClockTime"] = Lighting.ClockTime
+OldLightingSettings["FogEnd"] = Lighting.FogEnd
+OldLightingSettings["GlobalShadows"] = Lighting.GlobalShadows
+OldLightingSettings["OutdoorAmbient"] = Lighting.OutdoorAmbient
+
+local FixLighting = LPH_NO_VIRTUALIZE(function()
+    Lighting.Brightness = OldLightingSettings["Brightness"]
+    Lighting.ClockTime = OldLightingSettings["ClockTime"]
+    Lighting.FogEnd = OldLightingSettings["FogEnd"]
+    Lighting.GlobalShadows = OldLightingSettings["GlobalShadows"]
+    Lighting.OutdoorAmbient = OldLightingSettings["OutdoorAmbient"]
+end)
+
+local Teleport = LPH_NO_VIRTUALIZE(function(CFrame_Pos, VehicleBypass)
+    local Character = LocalPlayer.Character
+    if not Character then return end
+    
+    local Root = Character:FindFirstChild("HumanoidRootPart")
+    if not Root then return end
+    
+    local Vehicle = Character:FindFirstChildOfClass("Humanoid").SeatPart
+    if Vehicle and VehicleBypass then
+        Vehicle.Parent.PrimaryPart:SetAttribute("CFrame", CFrame_Pos)
+        Vehicle.Parent:PivotTo(CFrame_Pos)
+    else
+        Root:SetAttribute("CFrame", CFrame_Pos)
+        Character:PivotTo(CFrame_Pos)
+    end
+end)
+
+local RunServiceConnection;
+
+local function SetValues()
+    if not CurrentGunHeld then return end
+    if not CurrentGunHeld:FindFirstChild("Setting") then return end
+    local Setting = require(CurrentGunHeld.Setting)
+    if not Setting then return end
+    if not Original_Weapon_Settings[CurrentGunHeld.Name] then
+        Original_Weapon_Settings[CurrentGunHeld.Name] = {}
+        for i,v in Setting do
+            Original_Weapon_Settings[CurrentGunHeld.Name][i] = v
+        end
+    end
+end
+
+local function ModWeapon(Weapon)
+    if not Weapon:FindFirstChild("Setting") then return end
+    local Setting = require(Weapon.Setting)
+    if not Setting then return end
+    
+    local Orig = Original_Weapon_Settings[Weapon.Name]
+    if not Orig then return end
+    
+    if Config.South_Bronx._Modifications.DisableJamming then
+        Setting.JamChance = 0
+    else
+        Setting.JamChance = Orig.JamChance
+    end
+    
+    if Config.South_Bronx._Modifications.ModifySpreadValue then
+        Setting.Spread = Orig.Spread * (Config.South_Bronx._Modifications.SpreadPercentage / 100)
+    else
+        Setting.Spread = Orig.Spread
+    end
+    
+    if Config.South_Bronx._Modifications.ModifyRecoilValue then
+        Setting.RecoilMin = Orig.RecoilMin * (Config.South_Bronx._Modifications.RecoilPercentage / 100)
+        Setting.RecoilMax = Orig.RecoilMax * (Config.South_Bronx._Modifications.RecoilPercentage / 100)
+    else
+        Setting.RecoilMin = Orig.RecoilMin
+        Setting.RecoilMax = Orig.RecoilMax
+    end
+    
+    if Config.South_Bronx._Modifications.Automatic then
+        Setting.Automatic = true
+    else
+        Setting.Automatic = Orig.Automatic
+    end
+    
+    if Config.South_Bronx._Modifications.ModifyFireRate then
+        Setting.FireRate = Orig.FireRate * (Config.South_Bronx._Modifications.FireRateSpeed / 100)
+    else
+        Setting.FireRate = Orig.FireRate
+    end
+    
+    if Config.South_Bronx._Modifications.ModifyReloadSpeed then
+        Setting.ReloadSpeed = Orig.ReloadSpeed * (Config.South_Bronx._Modifications.ReloadSpeed / 100)
+    else
+        Setting.ReloadSpeed = Orig.ReloadSpeed
+    end
+    
+    if Config.South_Bronx._Modifications.ModifyEquipSpeed then
+        Setting.EquipSpeed = Orig.EquipSpeed * (Config.South_Bronx._Modifications.EquipSpeed / 100)
+    else
+        Setting.EquipSpeed = Orig.EquipSpeed
+    end
+end
+
+local function ModWeapons()
+    if CurrentGunHeld then
+        ModWeapon(CurrentGunHeld)
+    end
+    for i,v in LocalPlayer.Backpack:GetChildren() do
+        if v:IsA("Tool") then
+            ModWeapon(v)
+        end
+    end
+    if LocalPlayer.Character then
+        for i,v in LocalPlayer.Character:GetChildren() do
+            if v:IsA("Tool") then
+                ModWeapon(v)
+            end
+        end
+    end
+end
+
+LocalPlayer.Backpack.ChildAdded:Connect(LPH_NO_VIRTUALIZE(function(Weapon)
+    if not Weapon:IsA("Tool") then return end
+    if Weapon:FindFirstChild("Setting") then
+        CurrentGunHeld = Weapon
+    end
+    SetValues()
+    ModWeapon(Weapon)
+end))
+
+LocalPlayer.CharacterAdded:Connect(function(Character)
+    Character.ChildAdded:Connect(LPH_NO_VIRTUALIZE(function(Weapon)
+        if not Weapon:IsA("Tool") then return end
+        if Weapon:FindFirstChild("Setting") then
+            CurrentGunHeld = Weapon
+        end
+        SetValues()
+        ModWeapon(Weapon)
+    end))
+    LocalPlayer.Backpack.ChildAdded:Connect(LPH_NO_VIRTUALIZE(function(Weapon)
+        if not Weapon:IsA("Tool") then return end
+        if Weapon:FindFirstChild("Setting") then
+            CurrentGunHeld = Weapon
+        end
+        SetValues()
+        ModWeapon(Weapon)
+    end))
+end)
+
+local ConfigMetatable = getmetatable(Config.South_Bronx.Modifications)
+if ConfigMetatable then
+    ConfigMetatable.__index = LPH_NO_VIRTUALIZE(function(...)
+        return Config.South_Bronx._Modifications[select(2, ...)]
+    end)
+    ConfigMetatable.__newindex = LPH_NO_VIRTUALIZE(function(...)
+        local Index, Value = select(2, ...)
+        Config.South_Bronx._Modifications[Index] = Value;
+        ModWeapons()
+    end)
+end
+
+UserInputService.InputBegan:Connect(function(Input, GameProcessedEvent)
+    if Input.KeyCode == Enum.KeyCode.E and Config.South_Bronx.LocalPlayer_Config.DeleteOnKey and (not GameProcessedEvent) then
+        if Mouse and Mouse.Target then
+            Mouse.Target:Destroy()
+        end
+    end
+end)
+
+ProximityPromptService.PromptButtonHoldBegan:Connect(LPH_NO_VIRTUALIZE(function(Prompt, Player)
+    if Prompt and Player == LocalPlayer and fireproximityprompt then
+        if Config.South_Bronx.LocalPlayer_Config.InstantInteract then
+            fireproximityprompt(Prompt)
+        end
+    end
+end))
+
+getgenv().Find_Bike = LPH_NO_VIRTUALIZE(function()
+    for Index, Value in Workspace:GetChildren() do
+        if Value:FindFirstChild("Owner") and string.match(tostring(Value), LocalPlayer.Name.."'s Car") and Value:FindFirstChild("Body") and Value:FindFirstChild("Body"):FindFirstChild("Passenger") then
+            return Value
+        end
+    end
+    return nil
+end)
+
+local FindSeatInPlayersCar = LPH_NO_VIRTUALIZE(function(Car)
+    for _Index, _Value in Car.Body:GetChildren() do
+        if _Value:IsA("Seat") then
+            if _Value.Occupant ~= nil then
+                continue
+            else
+                return _Value
+            end
+        end
+    end
+    return
+end)
+
+getgenv().SitInPlayersVehicle = LPH_NO_VIRTUALIZE(function(Player)
+    if not Player.Character or Player.Character.Humanoid then return end
+end)
+
+local PressKey = function(KeyCode, Duration)
+    task.spawn(LPH_NO_VIRTUALIZE(function()
+        Services.VirtualInputManager:SendKeyEvent(false, KeyCode, false, game)
+        Services.VirtualInputManager:SendKeyEvent(true, KeyCode, false, game)
+        task.wait(Duration)
+        Services.VirtualInputManager:SendKeyEvent(false, KeyCode, false, game)
+    end))
+end
+
+task.spawn(LPH_NO_VIRTUALIZE(function()
+    while true do
+        task.wait()
+        if not Config.TheBronx.Farms.FarmTrash then continue end
+        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then continue end
+        if not LocalPlayer.Character:FindFirstChild("Humanoid") or LocalPlayer.Character:FindFirstChild("Humanoid").Health == 0 then continue end
+        for Index, Value in Workspace:GetChildren() do
+            if Value.Name == "DumpsterPromt" and Config.TheBronx.Farms.FarmTrash then
+                if Value:FindFirstChild("ProximityPrompt") and Value:FindFirstChild("ProximityPrompt").Enabled then
+                    Value:FindFirstChild("ProximityPrompt").HoldDuration = 0
+                    Teleport(CFrame.new(Value.Position.X, Value.Position.Y, Value.Position.Z))
+                    task.wait(0.4)
+                    if not Solara then
+                        PressKey(Enum.KeyCode.E)
+                    else
+                        fireproximityprompt(Value:FindFirstChild("ProximityPrompt"))
+                    end
+                    task.wait(0.5)
+                    Value:FindFirstChild("ProximityPrompt").HoldDuration = 1
+                end
+            end
+        end
+        if Config.TheBronx.Farms.AutoSellTrash then
+            for Index, Value in LocalPlayer.Backpack:GetChildren() do
+                if Value:IsA("Tool") then
+                    ReplicatedStorage:WaitForChild("PawnRemote"):FireServer(Value.Name)
+                    task.wait()
+                end
+            end
+            task.wait(1)
+        end
+    end
+end))
+
+GetGoodCleaner = LPH_NO_VIRTUALIZE(function()
+    local CounterInstance;
+    for Index, Value in Workspace["1# Map"]:GetChildren() do
+        if Value:FindFirstChild("CounterM") then
+            CounterInstance = Value
+        end
+    end
+    for Index, Value in next, {Workspace.CounterBag:GetChildren(), CounterInstance:GetChildren()} do
+        for _Index, _Value in Value do
+            if _Value:FindFirstChild("CashPrompt", true) and _Value:FindFirstChild("CashPrompt", true).Enabled and _Value:FindFirstChild("CashPrompt", true).ObjectText == "Count Bread" and _Value:FindFirstChild("GrabPrompt", true) and not _Value:FindFirstChild("GrabPrompt", true).Enabled then
+                return _Value
+            end
+        end
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(Input, GameProcessedEvent)
+    if Input.KeyCode == Config.TheBronx.VehicleModifications.InstantStopBind and Config.TheBronx.VehicleModifications.InstantStop then
+        -- Handle Instant Stop logic
+    end
+end)
+
+WorldToScreenPoint = Camera.WorldToScreenPoint;
+GetMouseLocation = UserInputService.GetMouseLocation;
+FindFirstChild = Workspace.FindFirstChild;
+GetPlayers = Players.GetPlayers;
+GetChildren = Workspace.GetChildren;
+GetPartsObscuringTarget = Camera.GetPartsObscuringTarget;
+GetDescendants = Workspace.GetDescendants;
+IsA = Workspace.IsA;
+FindFirstChildOfClass = Workspace.FindFirstChildOfClass
+
+DistanceCheck = LPH_NO_VIRTUALIZE(function(Player, Distance)
+    if not Player then return false end
+    if Player.Character and FindFirstChild(Player.Character,"HumanoidRootPart") then
+        local Magnitude = (Camera.CFrame.Position - FindFirstChild(Player.Character,"HumanoidRootPart").Position).Magnitude;
+        return Distance > Magnitude
+    end;
+    return false
+end);
+
+WallCheck = LPH_NO_VIRTUALIZE(function(Character)
+    local Origin = Camera.CFrame.Position;
+    if not FindFirstChild(Character, "Head") then return false end
+    local Position = FindFirstChild(Character, "Head").Position;
+    local Parameters = RaycastParams.new();
+    Parameters.FilterDescendantsInstances = { LocalPlayer.Character, Camera, Character };
+    Parameters.FilterType = Enum.RaycastFilterType.Blacklist;
+    Parameters.IgnoreWater = true;
+    return not Workspace:Raycast(Origin, Position - Origin, Parameters)
+end)
+
+local function RegisterFont(Name, Weight, Style, Data)
+    return Enum.Font.Code
+end
+
+local Tahoma = RegisterFont("Tahoma", 400, "Normal", { Id = "Tahoma.ttf", Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Tahoma-Regular.ttf"), })
+local Pixel = RegisterFont("Pixel", 400, "Normal", { Id = "Pixel.ttf", Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Flex-Regular.ttf"), })
+local Minecraftia = RegisterFont("Minecraftia", 400, "Normal", { Id = "Minecraftia.ttf", Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Minecraftia-Regular.ttf"), })
+local Verdana = RegisterFont("Verdana", 400, "Normal", { Id = "Verdana.ttf", Font = game:HttpGet("https://github.com/i77lhm/storage/raw/refs/heads/main/fonts/Verdana-Font.ttf"), })
+Config.ESP.Fonts["Plex"] = Font.new(Tahoma, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+Config.ESP.Fonts["Pixel"] = Font.new(Pixel, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+Config.ESP.Fonts["Minecraftia"] = Font.new(Minecraftia, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+Config.ESP.Fonts["Verdana"] = Font.new(Verdana, Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+
+local Players_ESP = {}
+local RefreshAllElements = LPH_NO_VIRTUALIZE(function()
+    for i,v in Players_ESP do
+        if v and v.RefreshElements then
+            v.RefreshElements()
+        end
+    end
+end)
+
+do
+    local Workspace, RunService, Players, CoreGui = Services.Workspace, Services.RunService, Services.Players, Services.CoreGui
+    local lplayer = Players.LocalPlayer;
+    local Cam = Workspace.CurrentCamera;
+    local RotationAngle, Tick = -45, tick();
+    local Functions = {}
+    
+    do
+        function Functions:Create(Class, Properties)
+            local _Instance = typeof(Class) == 'string' and Instance.new(Class) or Class
+            for Property, Value in pairs(Properties) do
+                _Instance[Property] = Value
+            end
+            return _Instance;
+        end
+        
+        Functions.FadeOutOnDist = LPH_NO_VIRTUALIZE(function(element, distance)
+            local transparency = math.max(0.1, 1 - (distance / Config.ESP.MaxDistance))
+            if element:IsA("TextLabel") then
+                element.TextTransparency = 1 - transparency
+            elseif element:IsA("ImageLabel") then
+                element.ImageTransparency = 1 - transparency
+            elseif element:IsA("UIStroke") then
+                element.Transparency = 1 - transparency
+            elseif element:IsA("Frame") then
+                element.BackgroundTransparency = 1 - transparency
+            elseif element:IsA("Highlight") then
+                element.FillTransparency = 1 - transparency
+                element.OutlineTransparency = 1 - transparency
+            end;
+        end);
+        
+        Functions.AddOutline = LPH_NO_VIRTUALIZE(function(Frame, Thickness)
+            Functions:Create("Frame", { Parent = Frame, BorderSizePixel = 0, BackgroundColor3 = Color3.new(0, 0, 0), Position = UDim2.new(0, -Thickness, 0, -Thickness), Size = UDim2.new(1, Thickness * 2, 0, Thickness), ZIndex = Frame.ZIndex - 1 })
+            Functions:Create("Frame", { Parent = Frame, BorderSizePixel = 0, BackgroundColor3 = Color3.new(0, 0, 0), Position = UDim2.new(0, -Thickness, 1, 0), Size = UDim2.new(1, Thickness * 2, 0, Thickness), ZIndex = Frame.ZIndex - 1 })
+            Functions:Create("Frame", { Parent = Frame, BorderSizePixel = 0, BackgroundColor3 = Color3.new(0, 0, 0), Position = UDim2.new(0, -Thickness, 0, 0), Size = UDim2.new(0, Thickness, 1, 0), ZIndex = Frame.ZIndex - 1 })
+            Functions:Create("Frame", { Parent = Frame, BorderSizePixel = 0, BackgroundColor3 = Color3.new(0, 0, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.new(0, Thickness, 1, 0), ZIndex = Frame.ZIndex - 1 })
+        end)
+    end;
+    
+    do
+        local ScreenGui = Functions:Create("ScreenGui", { Parent = CoreGui, Name = "ESPHolder", ResetOnSpawn = false, });
+        local DupeCheck = LPH_NO_VIRTUALIZE(function(plr)
+            if ScreenGui:FindFirstChild(plr.Name) then
+                ScreenGui[plr.Name]:Destroy()
+            end
+        end)
+        
+        local getHealthColor = LPH_NO_VIRTUALIZE(function(currentHealth, maxHealth)
+            return Config.ESP.Drawing.Healthbar.GradientRGB1:Lerp(Config.ESP.Drawing.Healthbar.GradientRGB2, (currentHealth / maxHealth))
+        end)
+        
+        local ESP = function(plr)
+            task.spawn(LPH_JIT_MAX(function()
+                if plr == lplayer then return end
+                coroutine.wrap(DupeCheck)(plr)
+                
+                local Name = Functions:Create("TextLabel", {Visible = false, Parent = ScreenGui, Position = UDim2.new(0.5, 0, 0, -11), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Code, TextSize = Config.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), RichText = true})
+                local Distance = Functions:Create("TextLabel", {Visible = false, Parent = ScreenGui, Position = UDim2.new(0.5, 0, 0, 11), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Code, TextSize = Config.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), RichText = true})
+                local Weapon = Functions:Create("TextLabel", {Visible = false, Parent = ScreenGui, Position = UDim2.new(0.5, 0, 0, 31), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Code, TextSize = Config.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), RichText = true, Text = "None"})
+                local Box = Functions:Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.75, BorderSizePixel = 0})
+                local Gradient1 = Functions:Create("UIGradient", {Parent = Box, Enabled = Config.ESP.Drawing.Boxes.GradientFill, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Config.ESP.Drawing.Boxes.GradientFillRGB1), ColorSequenceKeypoint.new(1, Config.ESP.Drawing.Boxes.GradientFillRGB2)}})
+                local Outline = Functions:Create("UIStroke", {Parent = Box, Enabled = Config.ESP.Drawing.Boxes.Gradient, Transparency = 0, Color = Color3.fromRGB(255, 255, 255), LineJoinMode = Enum.LineJoinMode.Miter})
+                local Gradient2 = Functions:Create("UIGradient", {Parent = Outline, Enabled = Config.ESP.Drawing.Boxes.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Config.ESP.Drawing.Boxes.GradientRGB1), ColorSequenceKeypoint.new(1, Config.ESP.Drawing.Boxes.GradientRGB2)}})
+                local Healthbar = Functions:Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0})
+                local BehindHealthbar = Functions:Create("Frame", {BorderColor3 = Color3.fromRGB(0, 0, 0), Parent = ScreenGui, ZIndex = -1, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0})
+                local HealthbarGradient = Functions:Create("UIGradient", {Parent = Healthbar, Enabled = Config.ESP.Drawing.Healthbar.Gradient, Rotation = -90, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Config.ESP.Drawing.Healthbar.GradientRGB1), ColorSequenceKeypoint.new(1, Config.ESP.Drawing.Healthbar.GradientRGB2)}})
+                local HealthText = Functions:Create("TextLabel", {Visible = false, Parent = ScreenGui, Position = UDim2.new(0.5, 0, 0, 31), Size = UDim2.new(0, 100, 0, 20)})
+                
+                local Highlight = Functions:Create("Highlight", {
+                    Parent = CoreGui,
+                    FillTransparency = Config.ESP.Drawing.Chams.Fill_Transparency / 100,
+                    OutlineTransparency = Config.ESP.Drawing.Chams.Outline_Transparency / 100,
+                    FillColor = Config.ESP.Drawing.Chams.FillRGB,
+                    OutlineColor = Config.ESP.Drawing.Chams.OutlineRGB,
+                    DepthMode = Config.ESP.Drawing.Chams.Thermal and Enum.HighlightDepthMode.Always or Enum.HighlightDepthMode.Occluded,
+                    Enabled = false
+                })
+                
+                local Updater;
+                Updater = RunService.RenderStepped:Connect(LPH_JIT_MAX(function()
+                    if not Config.ESP.Enabled or not plr or not plr.Parent then
+                        Box.Visible = false
+                        Name.Visible = false
+                        Distance.Visible = false
+                        Weapon.Visible = false
+                        Healthbar.Visible = false
+                        BehindHealthbar.Visible = false
+                        HealthText.Visible = false
+                        Highlight.Enabled = false
+                        if not plr or not plr.Parent then
+                            Updater:Disconnect()
+                        end
+                        return
+                    end
+                    
+                    local Character = plr.Character
+                    if Character and Character:FindFirstChild("HumanoidRootPart") and Character:FindFirstChild("Head") and Character:FindFirstChildOfClass("Humanoid") then
+                        local Hum = Character:FindFirstChildOfClass("Humanoid")
+                        if Config.ESP.FadeOut.OnDeath and Hum.Health <= 0 then
+                            Box.Visible = false; Name.Visible = false; Distance.Visible = false; Weapon.Visible = false; Healthbar.Visible = false; BehindHealthbar.Visible = false; HealthText.Visible = false; Highlight.Enabled = false;
+                            return
+                        end
+                        
+                        local RootPart = Character.HumanoidRootPart
+                        local Head = Character.Head
+                        local CamPos = Cam.CFrame.Position
+                        local DistanceFromCam = (RootPart.Position - CamPos).Magnitude
+                        
+                        if DistanceFromCam > Config.ESP.MaxDistance then
+                            Box.Visible = false; Name.Visible = false; Distance.Visible = false; Weapon.Visible = false; Healthbar.Visible = false; BehindHealthbar.Visible = false; HealthText.Visible = false; Highlight.Enabled = false;
+                            return
+                        end
+                        
+                        -- PERFORM VISIBILITY CHECK
+                        local IsTargetVisible = WallCheck(Character)
+                        
+                        -- 1. HARD VISIBILITY CHECK (Completely hide Text/Boxes if hidden)
+                        if Config.ESP.Drawing.Chams.VisibleCheckESP and not IsTargetVisible then
+                            Box.Visible = false; Name.Visible = false; Distance.Visible = false; Weapon.Visible = false; Healthbar.Visible = false; BehindHealthbar.Visible = false; HealthText.Visible = false;
+                            Highlight.Enabled = false
+                            return
+                        end
+                        
+                        local RootPos, OnScreen = Cam:WorldToViewportPoint(RootPart.Position)
+                        if OnScreen then
+                            -- Determine colors based on Visibility Check (Separate color option)
+                            local CurrentBoxColor = Config.ESP.Drawing.Boxes.Full.RGB
+                            local CurrentFillColor = Config.ESP.Drawing.Chams.FillRGB
+                            
+                            if Config.ESP.Drawing.Chams.VisibleCheck and not IsTargetVisible then
+                                CurrentBoxColor = Config.ESP.Drawing.Chams.OccludedRGB
+                                CurrentFillColor = Config.ESP.Drawing.Chams.OccludedRGB
+                            end
+                            
+                            -- Update Box Properties
+                            Box.Visible = Config.ESP.Drawing.Boxes.Bounding.Enabled
+                            Box.BackgroundColor3 = Config.ESP.Drawing.Boxes.Filled.RGB
+                            Box.BackgroundTransparency = Config.ESP.Drawing.Boxes.Filled.Enabled and Config.ESP.Drawing.Boxes.Filled.Transparency or 1
+                            Outline.Color = CurrentBoxColor
+                            
+                            -- Calculate dimensions dynamically
+                            local HeadPos = Cam:WorldToViewportPoint(Head.Position + Vector3.new(0, 0.5, 0))
+                            local LegPos = Cam:WorldToViewportPoint(RootPart.Position - Vector3.new(0, 3, 0))
+                            local BoxHeight = math.abs(HeadPos.Y - LegPos.Y)
+                            local BoxWidth = BoxHeight / 1.5
+                            
+                            Box.Size = UDim2.new(0, BoxWidth, 0, BoxHeight)
+                            Box.Position = UDim2.new(0, RootPos.X - BoxWidth / 2, 0, RootPos.Y - BoxHeight / 2)
+                            
+                            -- Update Chams
+                            Highlight.Enabled = Config.ESP.Drawing.Chams.Enabled
+                            Highlight.Adornee = Character
+                            Highlight.FillColor = CurrentFillColor
+                            Highlight.OutlineColor = Config.ESP.Drawing.Chams.OutlineRGB
+                            Highlight.FillTransparency = Config.ESP.Drawing.Chams.Fill_Transparency / 100
+                            Highlight.OutlineTransparency = Config.ESP.Drawing.Chams.Outline_Transparency / 100
+                            Highlight.DepthMode = Config.ESP.Drawing.Chams.Thermal and Enum.HighlightDepthMode.Always or Enum.HighlightDepthMode.Occluded
+                            
+                            -- Update Name & Metrics
+                            Name.Visible = Config.ESP.Drawing.Names.Enabled
+                            Name.Text = string.format("<font color='rgb(%d,%d,%d)'>%s</font>", Config.ESP.Drawing.Names.RGB.R*255, Config.ESP.Drawing.Names.RGB.G*255, Config.ESP.Drawing.Names.RGB.B*255, plr.Name)
+                            Name.Position = UDim2.new(0, RootPos.X, 0, RootPos.Y - BoxHeight / 2 - 10)
+                            
+                            Distance.Visible = Config.ESP.Drawing.Distances.Enabled
+                            Distance.Text = tostring(math.floor(DistanceFromCam)) .. " studs"
+                            Distance.Position = UDim2.new(0, RootPos.X, 0, RootPos.Y + BoxHeight / 2 + 10)
+                            
+                            -- Update Healthbars
+                            Healthbar.Visible = Config.ESP.Drawing.Healthbar.Enabled
+                            BehindHealthbar.Visible = Config.ESP.Drawing.Healthbar.Enabled
+                            
+                            local HealthPercent = Hum.Health / Hum.MaxHealth
+                            Healthbar.Size = UDim2.new(0, Config.ESP.Drawing.Healthbar.Width, 0, BoxHeight * HealthPercent)
+                            Healthbar.Position = UDim2.new(0, RootPos.X - BoxWidth / 2 - 6, 0, (RootPos.Y - BoxHeight / 2) + (BoxHeight * (1 - HealthPercent)))
+                            
+                            BehindHealthbar.Size = UDim2.new(0, Config.ESP.Drawing.Healthbar.Width + 2, 0, BoxHeight + 2)
+                            BehindHealthbar.Position = UDim2.new(0, RootPos.X - BoxWidth / 2 - 7, 0, RootPos.Y - BoxHeight / 2 - 1)
+                            
+                            if Config.ESP.FadeOut.OnDistance then
+                                Functions.FadeOutOnDist(Box, DistanceFromCam)
+                                Functions.FadeOutOnDist(Name, DistanceFromCam)
+                                Functions.FadeOutOnDist(Distance, DistanceFromCam)
+                                Functions.FadeOutOnDist(Highlight, DistanceFromCam)
+                            end
+                        else
+                            Box.Visible = false; Name.Visible = false; Distance.Visible = false; Weapon.Visible = false; Healthbar.Visible = false; BehindHealthbar.Visible = false; HealthText.Visible = false; Highlight.Enabled = false;
+                        end
+                    else
+                        Box.Visible = false; Name.Visible = false; Distance.Visible = false; Weapon.Visible = false; Healthbar.Visible = false; BehindHealthbar.Visible = false; HealthText.Visible = false; Highlight.Enabled = false;
+                    end
+                end))
+                
+                Players_ESP[plr.Name] = {
+                    RefreshElements = function() end
+                }
+            end))
+        end
+        
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= lplayer then
+                ESP(player)
+            end
+        end
+        Players.PlayerAdded:Connect(ESP)
+    end
+end
+
+-- UI Window construction & layouts
+local window = library:window({name = "bor", suffix = "os", gameInfo = string.format("boros : %s", Game_Name:lower())})
+
+if Game_Name == "The Bronx" then
+    window:seperator({name = "Game"})
+    do 
+        local LocalPlayerTab, PlayersTab, PurchaseGunTab, MiscTab, SafeTab = window:tab({name = "Main", tabs = {"Local Player", "Players", "Teleports", "Misc", "Safe"}, icon = GetImage("World.png")})
+        -- General game options ...
+    end
+end
+
+window:seperator({name = "World"})
+do 
+    local VisualsTab = window:tab({name = "Visuals", tabs = {"Players"}, icon = GetImage("ESP.png")})
+    local VisualsColum = VisualsTab:column({})
+    local PlayerVisualsSection = VisualsColum:section({name = "Player Visuals", side = "left", size = 0.725})
+    
+    PlayerVisualsSection:toggle({name = "Enabled", flag = "PlayerVisuals_Enabled", type = "toggle", callback = function(state) 
+        Config.ESP.Enabled = state 
+        RefreshAllElements() 
+    end})
+    
+    PlayerVisualsSection:toggle({name = "Bounding Boxes", flag = "PlayerVisuals_BoundingBoxes", type = "toggle", callback = function(state) 
+        Config.ESP.Drawing.Boxes.Bounding.Enabled = state 
+    end})
+
+    -- NEW SEPARATE COLOR CONFIG OPTION (OCCLUDED / HIDDEN TARGET TARGETS)
+    PlayerVisualsSection:toggle({name = "Visible Check (Chams Color Update)", flag = "PlayerVisuals_VisibleCheckColor", type = "toggle", default = false, callback = function(state)
+        Config.ESP.Drawing.Chams.VisibleCheck = state
+    end})
+
+    PlayerVisualsSection:toggle({name = "Visible Check (Hide Completely Behind Wall)", flag = "PlayerVisuals_VisibleCheckHide", type = "toggle", default = false, callback = function(state)
+        Config.ESP.Drawing.Chams.VisibleCheckESP = state
+    end})
+
+    PlayerVisualsSection:colorpicker({name = "Occluded Color", flag = "PlayerVisuals_OccludedColor", default = Color3.fromRGB(255, 0, 0), callback = function(color)
+        Config.ESP.Drawing.Chams.OccludedRGB = color
+    end})
+end
