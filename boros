@@ -667,6 +667,8 @@ local Config = {
                 OutlineRGB = Color3.fromRGB(0,0,0),
                 Outline_Transparency = 80,
                 VisibleCheck = false,
+                OccludedFillRGB = Color3.fromRGB(255, 0, 0),
+                OccludedOutlineRGB = Color3.fromRGB(139, 0, 0),
             },
             Names = {
                 Enabled = false,
@@ -5660,6 +5662,7 @@ do
             local HealthbarGradient = Functions:Create("UIGradient", {Parent = Healthbar, Enabled = Config.ESP.Drawing.Healthbar.Gradient, Rotation = -90, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Config.ESP.Drawing.Healthbar.GradientRGB1), ColorSequenceKeypoint.new(1, Config.ESP.Drawing.Healthbar.GradientRGB2)}})
             local HealthText = Functions:Create("TextLabel", {Visible = false,Parent = ScreenGui, Position = UDim2.new(0.5, 0, 0, 31), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.Code, TextSize = Config.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), ZIndex = 500})
             local Chams = Functions:Create("Highlight", {Parent = ScreenGui, FillTransparency = 1, OutlineTransparency = 0, OutlineColor = Color3.fromRGB(119, 120, 255), DepthMode = "AlwaysOnTop"})
+            local ChamsOccluded = Functions:Create("Highlight", {Parent = ScreenGui, FillTransparency = 1, OutlineTransparency = 0, OutlineColor = Color3.fromRGB(255, 0, 0), DepthMode = "Occluded"})
             local WeaponIcon = Functions:Create("ImageLabel", {Parent = ScreenGui, BackgroundTransparency = 1, BorderColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, Size = UDim2.new(0, 40, 0, 40)})
             local Gradient3 = Functions:Create("UIGradient", {Parent = WeaponIcon, Rotation = -90, Enabled = Config.ESP.Drawing.Weapons.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Config.ESP.Drawing.Weapons.GradientRGB1), ColorSequenceKeypoint.new(1, Config.ESP.Drawing.Weapons.GradientRGB2)}})
             local LeftTop = Functions:Create("Frame", {Parent = ScreenGui, BackgroundColor3 = Config.ESP.Drawing.Boxes.Corner.RGB, Position = UDim2.new(0, 0, 0, 0), BorderSizePixel = 0, BorderColor3 = Color3.new(0,0,0)})
@@ -5788,18 +5791,21 @@ do
                         end
 
                         do -- \\ Chams
-                            if Config.ESP.Drawing.Chams.VisibleCheck then
-                                Chams.DepthMode = "Occluded"
-                            else
-                                Chams.DepthMode = "AlwaysOnTop"
-                            end
-
+                            Chams.DepthMode = "AlwaysOnTop"
                             Chams.FillColor = Config.ESP.Drawing.Chams.FillRGB
                             Chams.OutlineColor = Config.ESP.Drawing.Chams.OutlineRGB
 
                             if not Config.ESP.Drawing.Chams.Thermal then 
                                 Chams.OutlineTransparency = Config.ESP.Drawing.Chams.Outline_Transparency / 100
                                 Chams.FillTransparency = Config.ESP.Drawing.Chams.Fill_Transparency / 100
+                            end
+
+                            ChamsOccluded.FillColor = Config.ESP.Drawing.Chams.OccludedFillRGB
+                            ChamsOccluded.OutlineColor = Config.ESP.Drawing.Chams.OccludedOutlineRGB
+
+                            if not Config.ESP.Drawing.Chams.Thermal then 
+                                ChamsOccluded.OutlineTransparency = Config.ESP.Drawing.Chams.Outline_Transparency / 100
+                                ChamsOccluded.FillTransparency = Config.ESP.Drawing.Chams.Fill_Transparency / 100
                             end
                         end
 
@@ -5878,6 +5884,7 @@ do
                     BottomRightDown.Visible = false;
                     Flag1.Visible = false;
                     Chams.Enabled = false;
+                    ChamsOccluded.Enabled = false;
                     Flag2.Visible = false;
                     if not plr then
                         ScreenGui:Destroy();
@@ -5931,11 +5938,17 @@ do
                                     do -- Chams
                                         Chams.Adornee = plr.Character
                                         Chams.Enabled = Config.ESP.Drawing.Chams.Enabled
+
+                                        ChamsOccluded.Adornee = plr.Character
+                                        ChamsOccluded.Enabled = Config.ESP.Drawing.Chams.Enabled and Config.ESP.Drawing.Chams.VisibleCheck
+
                                         do -- Breathe
                                             if Config.ESP.Drawing.Chams.Thermal then
                                                 local breathe_effect = math.atan(math.sin(tick() * 2)) * 2 / math.pi
                                                 Chams.FillTransparency = Config.ESP.Drawing.Chams.Fill_Transparency * breathe_effect * 0.01
                                                 Chams.OutlineTransparency = Config.ESP.Drawing.Chams.Outline_Transparency * breathe_effect * 0.01
+                                                ChamsOccluded.FillTransparency = Config.ESP.Drawing.Chams.Fill_Transparency * breathe_effect * 0.01
+                                                ChamsOccluded.OutlineTransparency = Config.ESP.Drawing.Chams.Outline_Transparency * breathe_effect * 0.01
                                             end
                                         end
                                     end;
@@ -15851,6 +15864,14 @@ window:seperator({name = "World"}) do
     _ChamsToggle:colorpicker({flag = "PlayerVisuals_Chams_Color2", color = Color3.new(0,0,0), alpha = 1, callback = function(state, alpha)
         Config.ESP.Drawing.Chams.OutlineRGB = state
         Config.ESP.Drawing.Distances.Outline_Transparency = alpha*100
+        RefreshAllElements()
+    end})
+
+    PlayerVisualsSection:toggle({name = "Visible Check", flag = "PlayerVisuals_VisibleCheck", type = "toggle", default = false, callback = function(state)
+        Config.ESP.Drawing.Chams.VisibleCheck = state
+        RefreshAllElements()
+    end}):colorpicker({flag = "PlayerVisuals_OccludedChams_Color", color = Color3.fromRGB(255, 0, 0), alpha = 0.8, callback = function(state, alpha)
+        Config.ESP.Drawing.Chams.OccludedFillRGB = state
         RefreshAllElements()
     end})
 
